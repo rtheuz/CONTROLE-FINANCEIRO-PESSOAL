@@ -44,7 +44,7 @@ function saveData(data) {
 
 // Generate unique ID
 function generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
 // ==========================================
@@ -153,7 +153,15 @@ function formatCurrency(value) {
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString + 'T00:00:00');
+    // Parse date string in YYYY-MM-DD format safely
+    const parts = dateString.split('-');
+    if (parts.length !== 3) {
+        return dateString;
+    }
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day);
     return date.toLocaleDateString('pt-BR');
 }
 
