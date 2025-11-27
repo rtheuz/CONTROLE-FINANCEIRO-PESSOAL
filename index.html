@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro Pessoal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>💰 Controle Financeiro Pessoal</h1>
+            <p class="subtitle">Gerencie seus gastos de forma fácil e automática</p>
+        </header>
+
+        <!-- Dashboard Summary Cards -->
+        <section class="dashboard">
+            <div class="card income-card">
+                <div class="card-icon">📈</div>
+                <div class="card-content">
+                    <h3>Receitas</h3>
+                    <p class="amount" id="total-income">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="card expense-card">
+                <div class="card-icon">📉</div>
+                <div class="card-content">
+                    <h3>Despesas</h3>
+                    <p class="amount" id="total-expense">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="card balance-card">
+                <div class="card-icon">💵</div>
+                <div class="card-content">
+                    <h3>Saldo</h3>
+                    <p class="amount" id="total-balance">R$ 0,00</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="transactions">Lançamentos</button>
+            <button class="tab-btn" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="reports">Relatórios</button>
+        </nav>
+
+        <!-- Transactions Tab -->
+        <section id="transactions" class="tab-content active">
+            <!-- Quick Add Form -->
+            <div class="form-section">
+                <h2>Novo Lançamento</h2>
+                <form id="transaction-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">Tipo</label>
+                            <select id="type" required>
+                                <option value="expense">Despesa</option>
+                                <option value="income">Receita</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Categoria</label>
+                            <select id="category" required>
+                                <optgroup label="Despesas" id="expense-categories">
+                                    <option value="alimentacao">🍔 Alimentação</option>
+                                    <option value="transporte">🚗 Transporte</option>
+                                    <option value="moradia">🏠 Moradia</option>
+                                    <option value="saude">💊 Saúde</option>
+                                    <option value="educacao">📚 Educação</option>
+                                    <option value="lazer">🎮 Lazer</option>
+                                    <option value="compras">🛒 Compras</option>
+                                    <option value="outros-despesa">📦 Outros</option>
+                                </optgroup>
+                                <optgroup label="Receitas" id="income-categories">
+                                    <option value="salario">💼 Salário</option>
+                                    <option value="freelance">💻 Freelance</option>
+                                    <option value="investimentos">📊 Investimentos</option>
+                                    <option value="outros-receita">💰 Outros</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Valor (R$)</label>
+                            <input type="number" id="amount" step="0.01" min="0.01" placeholder="0,00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Data</label>
+                            <input type="date" id="date" required>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="description">Descrição</label>
+                        <input type="text" id="description" placeholder="Ex: Almoço no restaurante" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Adicionar Lançamento</button>
+                </form>
+            </div>
+
+            <!-- Transactions List -->
+            <div class="transactions-section">
+                <div class="transactions-header">
+                    <h2>Histórico de Lançamentos</h2>
+                    <div class="filter-group">
+                        <input type="month" id="filter-month" title="Filtrar por mês">
+                        <button class="btn-secondary" id="clear-filter">Limpar Filtro</button>
+                    </div>
+                </div>
+                <div class="transactions-list" id="transactions-list">
+                    <p class="empty-state">Nenhum lançamento registrado ainda.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Tab -->
+        <section id="dashboard" class="tab-content">
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Despesas por Categoria</h3>
+                    <canvas id="expenses-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Receitas por Categoria</h3>
+                    <canvas id="income-chart"></canvas>
+                </div>
+                <div class="chart-container full-width">
+                    <h3>Evolução Mensal</h3>
+                    <canvas id="monthly-chart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Tab -->
+        <section id="reports" class="tab-content">
+            <div class="reports-filters">
+                <h2>Filtros do Relatório</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="report-start-date">Data Inicial</label>
+                        <input type="date" id="report-start-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="report-end-date">Data Final</label>
+                        <input type="date" id="report-end-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="report-type">Tipo</label>
+                        <select id="report-type">
+                            <option value="all">Todos</option>
+                            <option value="income">Receitas</option>
+                            <option value="expense">Despesas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="report-category">Categoria</label>
+                        <select id="report-category">
+                            <option value="all">Todas</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-primary" id="generate-report">Gerar Relatório</button>
+            </div>
+
+            <div class="report-results" id="report-results">
+                <div class="report-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Total de Receitas:</span>
+                        <span class="summary-value income" id="report-income">R$ 0,00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total de Despesas:</span>
+                        <span class="summary-value expense" id="report-expense">R$ 0,00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Saldo do Período:</span>
+                        <span class="summary-value" id="report-balance">R$ 0,00</span>
+                    </div>
+                </div>
+                <div class="report-table-container">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Categoria</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-table-body">
+                            <tr>
+                                <td colspan="5" class="empty-state">Clique em "Gerar Relatório" para ver os dados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn-secondary" id="export-csv">Exportar CSV</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Controle Financeiro Pessoal - Desenvolvido para facilitar sua vida financeira</p>
+        </footer>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-modal">
+        <div class="modal-content">
+            <h3>Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir este lançamento?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancel-delete">Cancelar</button>
+                <button class="btn-danger" id="confirm-delete">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
