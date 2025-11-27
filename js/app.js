@@ -16,16 +16,17 @@ const CATEGORIES = {
     expense: {
         'alimentacao': { icon: '🍔', label: 'Alimentação' },
         'transporte': { icon: '🚗', label: 'Transporte' },
-        'moradia': { icon: '🏠', label: 'Moradia' },
         'saude': { icon: '💊', label: 'Saúde' },
         'educacao': { icon: '📚', label: 'Educação' },
         'lazer': { icon: '🎮', label: 'Lazer' },
         'compras': { icon: '🛒', label: 'Compras' },
+        'contasfixas': { icon: '🏠', label: 'Contas Fixas' },
+        'assinaturas': { icon: '📺', label: 'Assinaturas' },
         'outros-despesa': { icon: '📦', label: 'Outros' }
     },
     income: {
         'salario': { icon: '💼', label: 'Salário' },
-        'freelance': { icon: '💻', label: 'Freelance' },
+        'rendaextra': { icon: '💸', label: 'Renda Extra' },
         'investimentos': { icon: '📊', label: 'Investimentos' },
         'outros-receita': { icon: '💰', label: 'Outros' }
     }
@@ -771,14 +772,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.transactions.length === 0) {
         // Add sample transactions for demonstration
         const sampleTransactions = [
-            { type: 'income', category: 'salario', amount: 5000, date: getDateString(-30), description: 'Salário mensal' },
-            { type: 'expense', category: 'moradia', amount: 1500, date: getDateString(-28), description: 'Aluguel' },
-            { type: 'expense', category: 'alimentacao', amount: 450, date: getDateString(-25), description: 'Supermercado' },
-            { type: 'expense', category: 'transporte', amount: 200, date: getDateString(-20), description: 'Combustível' },
-            { type: 'income', category: 'freelance', amount: 800, date: getDateString(-15), description: 'Projeto web' },
-            { type: 'expense', category: 'lazer', amount: 150, date: getDateString(-10), description: 'Cinema e jantar' },
-            { type: 'expense', category: 'saude', amount: 100, date: getDateString(-5), description: 'Farmácia' },
-            { type: 'expense', category: 'educacao', amount: 200, date: getDateString(-2), description: 'Curso online' }
         ];
         
         sampleTransactions.forEach(t => addTransaction(t));
