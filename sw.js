@@ -1,13 +1,15 @@
 // Service Worker for Controle Financeiro Pessoal PWA
-const CACHE_NAME = 'controle-financeiro-v1';
+const CACHE_NAME = 'controle-financeiro-v2';
+
+// Use relative paths for GitHub Pages compatibility
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/js/app.js',
-    '/manifest.json',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    './',
+    './index.html',
+    './css/style.css',
+    './js/app.js',
+    './manifest.json',
+    './icons/icon-192x192.png',
+    './icons/icon-512x512.png'
 ];
 
 // Install event - cache files
@@ -70,8 +72,8 @@ self.addEventListener('fetch', (event) => {
                 });
             })
             .catch(() => {
-                // Offline fallback
-                return caches.match('/index.html');
+                // Offline fallback - return cached index.html
+                return caches.match('./index.html');
             })
     );
 });
