@@ -1,6 +1,6 @@
 # 💰 Controle Financeiro Pessoal
 
-Um aplicativo web simples e intuitivo para controle de gastos pessoais, com lançamentos automáticos, dashboards e relatórios.
+Um aplicativo web (PWA) simples e intuitivo para controle de gastos pessoais, com lançamentos automáticos, dashboards e relatórios. **Pode ser instalado no celular!**
 
 ## ✨ Funcionalidades
 
@@ -11,10 +11,33 @@ Um aplicativo web simples e intuitivo para controle de gastos pessoais, com lan�
 - **Exportação CSV**: Exporte seus dados para planilhas
 - **Design Responsivo**: Funciona perfeitamente em desktop e dispositivos móveis
 - **Armazenamento Local**: Seus dados ficam salvos no navegador
+- **PWA (Progressive Web App)**: Instale no celular como um app nativo
+- **Funciona Offline**: Acesse seus dados mesmo sem internet
+
+## 📱 Como Instalar no Celular
+
+### Android (Chrome)
+1. Acesse o aplicativo pelo navegador Chrome
+2. Toque no menu (⋮) no canto superior direito
+3. Selecione "Adicionar à tela inicial" ou "Instalar aplicativo"
+4. Confirme a instalação
+5. O app aparecerá na sua tela inicial como um aplicativo nativo!
+
+### iPhone/iPad (Safari)
+1. Acesse o aplicativo pelo navegador Safari
+2. Toque no botão de compartilhar (📤)
+3. Role e selecione "Adicionar à Tela de Início"
+4. Confirme a instalação
+5. O app aparecerá na sua tela inicial!
+
+### Desktop (Chrome/Edge)
+1. Acesse o aplicativo pelo navegador
+2. Clique no ícone de instalação (➕) na barra de endereços
+3. Ou acesse Menu → "Instalar Controle Financeiro Pessoal"
 
 ## 🚀 Como Usar
 
-1. Abra o arquivo `index.html` em qualquer navegador moderno
+1. Abra o arquivo `index.html` em qualquer navegador moderno (ou instale como app)
 2. Na aba **Lançamentos**, adicione suas receitas e despesas
 3. Visualize seus gastos na aba **Dashboard**
 4. Gere relatórios personalizados na aba **Relatórios**
@@ -24,10 +47,13 @@ Um aplicativo web simples e intuitivo para controle de gastos pessoais, com lan�
 ```
 CONTROLE-FINANCEIRO-PESSOAL/
 ├── index.html          # Página principal
+├── manifest.json       # Configuração PWA
+├── sw.js              # Service Worker (offline)
 ├── css/
 │   └── style.css      # Estilos da aplicação
 ├── js/
 │   └── app.js         # Lógica da aplicação
+├── icons/             # Ícones do app
 └── README.md          # Documentação
 ```
 
@@ -38,6 +64,8 @@ CONTROLE-FINANCEIRO-PESSOAL/
 - JavaScript (ES6+)
 - Chart.js (para gráficos)
 - LocalStorage (para persistência de dados)
+- Service Worker (para funcionamento offline)
+- Web App Manifest (para instalação como PWA)
 
 ## 📊 Categorias Disponíveis
 
