@@ -32,6 +32,14 @@ const CATEGORIES = {
     }
 };
 
+// Payment methods
+const PAYMENT_METHODS = {
+    'debit': { icon: '💳', label: 'Débito' },
+    'credit': { icon: '💳', label: 'Crédito' },
+    'cash': { icon: '💵', label: 'Dinheiro' },
+    'pix': { icon: '📱', label: 'PIX' }
+};
+
 // Load data from localStorage
 function loadData() {
     const data = localStorage.getItem(STORAGE_KEY);
@@ -107,10 +115,15 @@ function calculateTotals(transactions) {
         .filter(t => t.type === 'expense')
         .reduce((sum, t) => sum + parseFloat(t.amount), 0);
     
+    const creditExpense = transactions
+        .filter(t => t.type === 'expense' && t.paymentMethod === 'credit')
+        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
     return {
         income,
         expense,
-        balance: income - expense
+        balance: income - expense,
+        creditExpense
     };
 }
 
@@ -184,6 +197,12 @@ function updateDashboardCards() {
     const balanceElement = document.getElementById('total-balance');
     balanceElement.textContent = formatCurrency(totals.balance);
     balanceElement.style.color = totals.balance >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+    
+    // Update credit card total
+    const creditElement = document.getElementById('total-credit');
+    if (creditElement) {
+        creditElement.textContent = formatCurrency(totals.creditExpense);
+    }
 }
 
 function renderTransactionsList(filters = {}) {
@@ -197,14 +216,17 @@ function renderTransactionsList(filters = {}) {
     
     container.innerHTML = transactions.map(t => {
         const categoryInfo = getCategoryInfo(t.type, t.category);
+        const paymentInfo = t.paymentMethod ? PAYMENT_METHODS[t.paymentMethod] : null;
+        const installmentInfo = t.installments && t.installments > 1 ? ` (${t.currentInstallment || 1}/${t.installments}x)` : '';
+        
         return `
             <div class="transaction-item" data-id="${t.id}">
                 <div class="transaction-info">
                     <span class="transaction-icon">${categoryInfo.icon}</span>
                     <div class="transaction-details">
-                        <span class="transaction-description">${escapeHtml(t.description)}</span>
+                        <span class="transaction-description">${escapeHtml(t.description)}${installmentInfo}</span>
                         <span class="transaction-category">${categoryInfo.label}</span>
-                        <span class="transaction-date">${formatDate(t.date)}</span>
+                        <span class="transaction-date">${formatDate(t.date)}${paymentInfo ? ` • ${paymentInfo.icon} ${paymentInfo.label}` : ''}</span>
                     </div>
                 </div>
                 <div class="transaction-actions">
@@ -647,6 +669,10 @@ function setupEventListeners() {
             if (btn.dataset.tab === 'dashboard') {
                 renderCharts();
             }
+            
+            if (btn.dataset.tab === 'credit-card') {
+                renderCreditCardSection();
+            }
         });
     });
     
@@ -677,6 +703,31 @@ function setupEventListeners() {
         }
     });
     
+    // Payment method change - show/hide installments
+    const paymentMethodSelect = document.getElementById('payment-method');
+    const installmentsGroup = document.getElementById('installments-group');
+    const paymentMethodRow = document.getElementById('payment-method-row');
+    
+    if (paymentMethodSelect) {
+        paymentMethodSelect.addEventListener('change', () => {
+            if (paymentMethodSelect.value === 'credit') {
+                installmentsGroup.style.display = 'block';
+            } else {
+                installmentsGroup.style.display = 'none';
+                document.getElementById('installments').value = '1';
+            }
+        });
+    }
+    
+    // Show/hide payment method based on type
+    typeSelect.addEventListener('change', () => {
+        if (typeSelect.value === 'income') {
+            paymentMethodRow.style.display = 'none';
+        } else {
+            paymentMethodRow.style.display = 'grid';
+        }
+    });
+    
     // Set default date to today
     document.getElementById('date').valueAsDate = new Date();
     
@@ -684,21 +735,58 @@ function setupEventListeners() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        const transaction = {
-            type: document.getElementById('type').value,
-            category: document.getElementById('category').value,
-            amount: parseFloat(document.getElementById('amount').value),
-            date: document.getElementById('date').value,
-            description: document.getElementById('description').value.trim()
-        };
+        const type = document.getElementById('type').value;
+        const paymentMethod = type === 'expense' ? document.getElementById('payment-method').value : null;
+        const installments = paymentMethod === 'credit' ? parseInt(document.getElementById('installments').value) : 1;
+        const amount = parseFloat(document.getElementById('amount').value);
+        const date = document.getElementById('date').value;
+        const description = document.getElementById('description').value.trim();
+        const category = document.getElementById('category').value;
         
-        addTransaction(transaction);
+        // If credit card with installments, create multiple transactions
+        if (paymentMethod === 'credit' && installments > 1) {
+            const installmentAmount = amount / installments;
+            for (let i = 0; i < installments; i++) {
+                const installmentDate = new Date(date);
+                installmentDate.setMonth(installmentDate.getMonth() + i);
+                
+                const transaction = {
+                    type,
+                    category,
+                    amount: installmentAmount,
+                    date: installmentDate.toISOString().split('T')[0],
+                    description,
+                    paymentMethod,
+                    installments,
+                    currentInstallment: i + 1,
+                    originalAmount: amount,
+                    parentId: i === 0 ? null : 'installment'
+                };
+                addTransaction(transaction);
+            }
+            showNotification(`Compra parcelada em ${installments}x adicionada!`, 'success');
+        } else {
+            const transaction = {
+                type,
+                category,
+                amount,
+                date,
+                description,
+                paymentMethod,
+                installments: 1
+            };
+            addTransaction(transaction);
+            showNotification('Lançamento adicionado com sucesso!', 'success');
+        }
+        
         form.reset();
         document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('installments').value = '1';
+        installmentsGroup.style.display = 'none';
         
         updateDashboardCards();
         renderTransactionsList();
-        showNotification('Lançamento adicionado com sucesso!', 'success');
+        renderCreditCardSection();
     });
     
     // Filter by month
@@ -755,6 +843,136 @@ function setupEventListeners() {
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     document.getElementById('report-start-date').valueAsDate = firstDayOfMonth;
     document.getElementById('report-end-date').valueAsDate = today;
+    
+    // Credit card month selector
+    const creditMonthInput = document.getElementById('credit-month');
+    if (creditMonthInput) {
+        const currentMonth = today.toISOString().slice(0, 7);
+        creditMonthInput.value = currentMonth;
+        creditMonthInput.addEventListener('change', renderCreditCardSection);
+    }
+}
+
+// ==========================================
+// CREDIT CARD SECTION
+// ==========================================
+
+function renderCreditCardSection() {
+    const creditMonthInput = document.getElementById('credit-month');
+    const selectedMonth = creditMonthInput ? creditMonthInput.value : new Date().toISOString().slice(0, 7);
+    
+    const allTransactions = getTransactions();
+    const creditTransactions = allTransactions.filter(t => 
+        t.paymentMethod === 'credit' && t.date.startsWith(selectedMonth)
+    );
+    
+    // Calculate current bill
+    const currentBill = creditTransactions.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    const currentBillElement = document.getElementById('current-bill');
+    if (currentBillElement) {
+        currentBillElement.textContent = formatCurrency(currentBill);
+    }
+    
+    // Calculate future installments
+    const futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + 1);
+    const futureMonth = futureDate.toISOString().slice(0, 7);
+    
+    const futureTransactions = allTransactions.filter(t => 
+        t.paymentMethod === 'credit' && t.date >= futureMonth
+    );
+    const futureTotal = futureTransactions.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
+    const futureElement = document.getElementById('future-installments');
+    if (futureElement) {
+        futureElement.textContent = formatCurrency(futureTotal);
+    }
+    
+    // Render credit transactions list
+    const creditListContainer = document.getElementById('credit-transactions-list');
+    if (creditListContainer) {
+        if (creditTransactions.length === 0) {
+            creditListContainer.innerHTML = '<p class="empty-state">Nenhuma compra no cartão neste mês.</p>';
+        } else {
+            creditListContainer.innerHTML = creditTransactions.map(t => {
+                const categoryInfo = getCategoryInfo(t.type, t.category);
+                const installmentInfo = t.installments > 1 ? ` (${t.currentInstallment}/${t.installments}x)` : '';
+                return `
+                    <div class="transaction-item credit-transaction">
+                        <div class="transaction-info">
+                            <span class="transaction-icon">${categoryInfo.icon}</span>
+                            <div class="transaction-details">
+                                <span class="transaction-description">${escapeHtml(t.description)}${installmentInfo}</span>
+                                <span class="transaction-category">${categoryInfo.label}</span>
+                                <span class="transaction-date">${formatDate(t.date)}</span>
+                            </div>
+                        </div>
+                        <div class="transaction-actions">
+                            <span class="transaction-amount expense">- ${formatCurrency(t.amount)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+    
+    // Render installments overview
+    renderInstallmentsOverview();
+}
+
+function renderInstallmentsOverview() {
+    const container = document.getElementById('installments-list');
+    if (!container) return;
+    
+    const allTransactions = getTransactions();
+    const today = new Date();
+    const currentMonth = today.toISOString().slice(0, 7);
+    
+    // Get all future installments (grouped by month)
+    const futureByMonth = {};
+    
+    allTransactions
+        .filter(t => t.paymentMethod === 'credit' && t.date >= currentMonth)
+        .forEach(t => {
+            const month = t.date.substring(0, 7);
+            if (!futureByMonth[month]) {
+                futureByMonth[month] = { total: 0, items: [] };
+            }
+            futureByMonth[month].total += parseFloat(t.amount);
+            futureByMonth[month].items.push(t);
+        });
+    
+    const sortedMonths = Object.keys(futureByMonth).sort();
+    
+    if (sortedMonths.length === 0) {
+        container.innerHTML = '<p class="empty-state">Nenhuma parcela futura.</p>';
+        return;
+    }
+    
+    container.innerHTML = sortedMonths.map(month => {
+        const [year, monthNum] = month.split('-');
+        const date = new Date(year, parseInt(monthNum) - 1);
+        const monthLabel = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        const data = futureByMonth[month];
+        
+        return `
+            <div class="installment-month-card">
+                <div class="installment-month-header">
+                    <span class="installment-month-name">${monthLabel}</span>
+                    <span class="installment-month-total">${formatCurrency(data.total)}</span>
+                </div>
+                <div class="installment-items">
+                    ${data.items.map(t => {
+                        const installmentInfo = t.installments > 1 ? ` (${t.currentInstallment}/${t.installments}x)` : '';
+                        return `<div class="installment-item">
+                            <span>${escapeHtml(t.description)}${installmentInfo}</span>
+                            <span>${formatCurrency(t.amount)}</span>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // ==========================================
@@ -766,6 +984,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDashboardCards();
     renderTransactionsList();
     populateReportCategories();
+    renderCreditCardSection();
     
     // Add some sample data if empty
     const data = loadData();
@@ -777,6 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sampleTransactions.forEach(t => addTransaction(t));
         updateDashboardCards();
         renderTransactionsList();
+        renderCreditCardSection();
     }
 });
 

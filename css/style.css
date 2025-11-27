@@ -772,3 +772,180 @@ body {
     border-radius: 10px;
     transition: width 0.5s ease;
 }
+
+/* Credit Card Styles */
+.credit-card .amount {
+    color: #8e44ad;
+}
+
+.credit-card-section {
+    background: var(--card-background);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.credit-card-header {
+    margin-bottom: 30px;
+}
+
+.credit-card-header h2 {
+    margin-bottom: 20px;
+}
+
+.credit-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.credit-summary-item {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.credit-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.credit-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.credit-month-selector {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.credit-month-selector label {
+    font-weight: 500;
+}
+
+.credit-month-selector input {
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.credit-month-selector input:focus {
+    outline: none;
+    border-color: #8e44ad;
+}
+
+.credit-transactions {
+    margin-bottom: 30px;
+}
+
+.credit-transactions h3 {
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.credit-transaction {
+    border-left: 4px solid #8e44ad;
+}
+
+.installments-overview h3 {
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.installment-month-card {
+    background: var(--background-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.installment-month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.installment-month-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+.installment-month-total {
+    font-weight: 700;
+    color: #8e44ad;
+    font-size: 1.2rem;
+}
+
+.installment-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.installment-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Payment method badge */
+.payment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.payment-badge.credit {
+    background: rgba(142, 68, 173, 0.1);
+    color: #8e44ad;
+}
+
+.payment-badge.debit {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.payment-badge.cash {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.payment-badge.pix {
+    background: rgba(0, 189, 174, 0.1);
+    color: #00bdae;
+}
+
+/* Responsive adjustments for credit card section */
+@media (max-width: 768px) {
+    .credit-summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .credit-month-selector {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .credit-month-selector input {
+        width: 100%;
+    }
+}

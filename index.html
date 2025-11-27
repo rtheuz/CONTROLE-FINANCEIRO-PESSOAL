@@ -59,11 +59,19 @@
                     <p class="amount" id="total-balance">R$ 0,00</p>
                 </div>
             </div>
+            <div class="card credit-card">
+                <div class="card-icon">💳</div>
+                <div class="card-content">
+                    <h3>Fatura do Cartão</h3>
+                    <p class="amount" id="total-credit">R$ 0,00</p>
+                </div>
+            </div>
         </section>
 
         <!-- Navigation Tabs -->
         <nav class="tabs">
             <button class="tab-btn active" data-tab="transactions">Lançamentos</button>
+            <button class="tab-btn" data-tab="credit-card">Cartão de Crédito</button>
             <button class="tab-btn" data-tab="dashboard">Dashboard</button>
             <button class="tab-btn" data-tab="reports">Relatórios</button>
         </nav>
@@ -115,6 +123,34 @@
                             <input type="date" id="date" required>
                         </div>
                     </div>
+                    <div class="form-row" id="payment-method-row">
+                        <div class="form-group">
+                            <label for="payment-method">Forma de Pagamento</label>
+                            <select id="payment-method">
+                                <option value="debit">💳 Débito</option>
+                                <option value="credit">💳 Crédito</option>
+                                <option value="cash">💵 Dinheiro</option>
+                                <option value="pix">📱 PIX</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="installments-group" style="display: none;">
+                            <label for="installments">Parcelas</label>
+                            <select id="installments">
+                                <option value="1">1x (à vista)</option>
+                                <option value="2">2x</option>
+                                <option value="3">3x</option>
+                                <option value="4">4x</option>
+                                <option value="5">5x</option>
+                                <option value="6">6x</option>
+                                <option value="7">7x</option>
+                                <option value="8">8x</option>
+                                <option value="9">9x</option>
+                                <option value="10">10x</option>
+                                <option value="11">11x</option>
+                                <option value="12">12x</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group full-width">
                         <label for="description">Descrição</label>
                         <input type="text" id="description" placeholder="Ex: Almoço no restaurante" required>
@@ -134,6 +170,44 @@
                 </div>
                 <div class="transactions-list" id="transactions-list">
                     <p class="empty-state">Nenhum lançamento registrado ainda.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Credit Card Tab -->
+        <section id="credit-card" class="tab-content">
+            <div class="credit-card-section">
+                <div class="credit-card-header">
+                    <h2>💳 Controle do Cartão de Crédito</h2>
+                    <div class="credit-summary-cards">
+                        <div class="credit-summary-item">
+                            <span class="credit-label">Fatura Atual</span>
+                            <span class="credit-value" id="current-bill">R$ 0,00</span>
+                        </div>
+                        <div class="credit-summary-item">
+                            <span class="credit-label">Próximas Parcelas</span>
+                            <span class="credit-value" id="future-installments">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="credit-month-selector">
+                    <label for="credit-month">Selecionar Mês da Fatura:</label>
+                    <input type="month" id="credit-month">
+                </div>
+                
+                <div class="credit-transactions">
+                    <h3>Lançamentos no Cartão</h3>
+                    <div class="transactions-list" id="credit-transactions-list">
+                        <p class="empty-state">Nenhuma compra no cartão registrada.</p>
+                    </div>
+                </div>
+                
+                <div class="installments-overview">
+                    <h3>📅 Parcelas Futuras</h3>
+                    <div id="installments-list">
+                        <p class="empty-state">Nenhuma parcela futura.</p>
+                    </div>
                 </div>
             </div>
         </section>
