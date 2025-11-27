@@ -1,6 +1,6 @@
 {
   "name": "controle-financeiro-pessoal",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Aplicativo web para controle de gastos pessoais com dashboards e relatórios",
   "main": "index.html",
   "scripts": {
