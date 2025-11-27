@@ -1,0 +1,13 @@
+{
+  "name": "controle-financeiro-pessoal",
+  "version": "1.0.0",
+  "description": "Aplicativo web para controle de gastos pessoais com dashboards e relatórios",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "echo \"No tests specified\""
+  },
+  "keywords": ["finance", "pwa", "budget", "expenses"],
+  "author": "",
+  "license": "ISC"
+}
